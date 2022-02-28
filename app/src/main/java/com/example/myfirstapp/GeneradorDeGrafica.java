@@ -20,7 +20,7 @@ public class GeneradorDeGrafica {
     String titulo;
     String extraName;
     int total;
-    ArrayList<Symbol> errores = new ArrayList<>();
+    ArrayList<Mistake> errores = new ArrayList<>();
     ArrayList<String> elementosX = new ArrayList<>();
     ArrayList<Double> elementosY = new ArrayList<>();
     ArrayList<Integer> unionX = new ArrayList<>();
@@ -48,7 +48,7 @@ public class GeneradorDeGrafica {
     }
 
     void setTitulo(String title) {
-        if (this.titulo == null || this.titulo.isEmpty()) {
+        if (this.titulo == null ||  this.titulo.isEmpty()) {
             this.titulo = title;
         } else {
             System.out.println("error, titulo repetido");
@@ -128,32 +128,44 @@ public class GeneradorDeGrafica {
     }
 
     void create() {
-        GraficaBarras graficaBarras = isBarrasValido();
-        GraficaPie graficaPie = isPieValido();
 
-        if (graficaBarras != null) {
-            this.graficasDeBarras.add(graficaBarras);
-            reset();
-        } else if (graficaPie != null) {
-            this.graficasDePie.add(graficaPie);
-            reset();
-        } else {
-            //Falta añadir errores a una lista
-            System.out.println("Error, no se han encontrado graficas validas");
-            reset();
+        if (barras) {
+            GraficaBarras graficaBarras = isBarrasValida();
+            if (graficaBarras != null) {
+                graficasDeBarras.add(graficaBarras);
+                reset();
+                return;
+            }
+
+        } else if (pie) {
+            GraficaPie pie = isPieValido();
+            if (pie != null) {
+                graficasDePie.add(pie);
+                reset();
+                return;
+            }
         }
+        reset();
+        warnings.add("No se encontraron graficas validas");
+
     }
 
-    private GraficaBarras isBarrasValido() {
+    private GraficaBarras isBarrasValida() {
         GraficaBarras graficaBarras = new GraficaBarras();
 
         if (barras && !pie) {
-            if (cantidad || porcentaje) {
+            if (cantidad) {
                 System.out.println("Error, los tipos \"cantidad\" y \"porcentaje\" no pertenecen a la grafica de barras");
+                errores.add(new Mistake("El atributo \"cantidad\" no pertenece a la grafica de barras", "cantidad"));
                 return null;
+            }
+            if (porcentaje) {
+                errores.add(new Mistake("El atributo \"porcentaje\" no pertenece a la grafica de barras", "porcentaje"));
             }
             if (total != 0) {
                 System.out.println("Error, la grafica de barras no tiene un total");
+                errores.add(new Mistake("El atributo \"total\" no pertenece a la grafica de barras", "total"));
+
                 return null;
 
             }
@@ -163,7 +175,7 @@ public class GeneradorDeGrafica {
                     graficaBarras.setElementosX((ArrayList<String>) elementosX.clone());
                     graficaBarras.setElementosY((ArrayList<Double>) elementosY.clone());
                 } else {
-                    System.out.println("Error, debe declarar elementos en los dos ejes");
+                    errores.add(new Mistake("Ambos ejes deben contener elementos", "Ejes"));
                     return null;
 
                 }
@@ -172,15 +184,20 @@ public class GeneradorDeGrafica {
                     graficaBarras.setUnionX((ArrayList<Integer>) this.unionX.clone());
                     graficaBarras.setUnionY((ArrayList<Integer>) this.unionY.clone());
                 } else {
-                    System.out.println("Error, sin uniones");
+                    errores.add(new Mistake("No se encontraron datos de union", "unir"));
                     return null;
 
                 }
+            } else {
+                errores.add(new Mistake("La grafica debe tener un titulo", "titulo"));
+                return null;
             }
 
         } else {
-            System.out.println("error, la grafica esta mal definida");
+            errores.add(new Mistake("Error en definicion de tipo", ""));
+
             System.out.println(barras);
+            return null;
         }
         System.out.println(graficaBarras.toString());
         return graficaBarras;
@@ -195,59 +212,77 @@ public class GeneradorDeGrafica {
                 graficaPie.setTitulo(titulo);
             } else {
                 System.out.println("Error, no se encontro un titulo");
+                errores.add(new Mistake("La grafica debe tener un titulo", "titulo"));
+
                 return null;
             }
             if (elementosX.isEmpty() && elementosY.isEmpty()) {
                 if (porcentaje && total == 0) {
                     if (!unionX.isEmpty() && !unionY.isEmpty()) {
-                        graficaPie.setUnionX(unionX);
-                        graficaPie.setUnionY(unionY);
+                        graficaPie.setUnionX((ArrayList<Integer>) unionX.clone());
+                        graficaPie.setUnionY((ArrayList<Integer>) unionY.clone());
                     } else {
                         System.out.println("Error, sin uniones");
+                        errores.add(new Mistake("No se encontraron datos de union", "unir"));
+
                         return null;
                     }
                     if (!etiquetas.isEmpty()) {
-                        graficaPie.setEtiquetas(etiquetas);
+                        graficaPie.setEtiquetas((ArrayList<String>) etiquetas.clone());
                     } else {
                         System.out.println("Error, no hay etiquetas");
+                        errores.add(new Mistake("No se encontraron etiquetas", "etiquetas"));
+
                         return null;
                     }
                     if (!valores.isEmpty()) {
-                        graficaPie.setValores(valores);
+                        graficaPie.setValores((ArrayList<Double>) valores.clone());
                     } else {
                         System.out.println("Error, no hay valores");
+                        errores.add(new Mistake("No se encontraron valores", "valores"));
+
                         return null;
                     }
 
                 } else if (cantidad && total > 0) {
                     if (!unionX.isEmpty() && !unionY.isEmpty()) {
-                        graficaPie.setUnionX(unionX);
-                        graficaPie.setUnionY(unionY);
+                        graficaPie.setUnionX((ArrayList<Integer>) unionX.clone());
+                        graficaPie.setUnionY((ArrayList<Integer>) unionY.clone());
                     } else {
                         System.out.println("Error, sin uniones");
+                        errores.add(new Mistake("No se encontraron datos de union", "unir"));
+
                         return null;
                     }
                     if (!etiquetas.isEmpty()) {
-                        graficaPie.setEtiquetas(etiquetas);
+                        graficaPie.setEtiquetas((ArrayList<String>) etiquetas.clone());
                     } else {
                         System.out.println("Error, no hay etiquetas");
+                        errores.add(new Mistake("No se encontraron etiquetas", "etiquetas"));
+
                         return null;
                     }
                     if (!valores.isEmpty()) {
-                        graficaPie.setValores(valores);
+                        graficaPie.setValores((ArrayList<Double>) valores.clone());
                     } else {
                         System.out.println("Error, no hay valores");
+                        errores.add(new Mistake("No se encontraron valores", "valores"));
+
                         return null;
                     }
                     graficaPie.setTotal(total);
                 }
             } else {
                 System.out.println("error, la grafica de pie no tiene ejes");
+                errores.add(new Mistake("La grafica de pie no tiene ejes", ""));
+
                 return null;
             }
 
         } else {
             System.out.println("Error, grafica mal declarada");
+            errores.add(new Mistake("Error en declaracion de grafica", ""));
+
             return null;
         }
 
@@ -260,7 +295,11 @@ public class GeneradorDeGrafica {
         cantidad = false;
         porcentaje = false;
         titulo = "";
+        titulo = null;
+        titulo = new String();
         extraName = "";
+        extraName = null;
+        titulo = new String();
         total = 0;
         errores.clear();
         elementosX.clear();
@@ -274,26 +313,42 @@ public class GeneradorDeGrafica {
 
 
     /*
-    def barras{
-	titulo:"perro";
-	ejex:["funciona","ya"];
-	ejey:[5.5,6.5];
-	unir:[{0,0},{1,1}];
+    def Barras{
+                titulo: "Grafica1";
+                ejex:["item1", "item2"];
+                ejey:[5.0, 9.0];
+                unir:[{0,1}, {1,0}];
 }
-def barras{
-	titulo:"aaaa";
-	ejex:["bbb","ccc"];
-	ejey:[5.5,6.5];
-	unir:[{0,0},{1,1}];
-}
-     */
 
+Def Pie{
+titulo: "Grafica2";
+tipo: Cantidad;
+etiquetas: ["Compi1", "Compi2"];
+valores:[5, 1];
+total: 25;
+unir:[{0,1}, {1,0}];
+extra: "Resto";
+}
+Def Pie{
+titulo: "Grafica3";
+tipo: Porcentaje;
+etiquetas: ["Compi1", "Compi2"];
+valores:[7, 12];
+unir:[{0,1}, {1,0}];
+extra: "Resto";
+}
+
+     */
     public ArrayList<GraficaBarras> getGraficasDeBarras() {
         return graficasDeBarras;
     }
 
     public ArrayList<GraficaPie> getGraficasDePie() {
         return graficasDePie;
+    }
+
+    public void addMistake(Mistake mistake) {
+        this.errores.add(mistake);
     }
 
 }

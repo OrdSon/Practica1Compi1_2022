@@ -65,19 +65,25 @@ class ActividadMuestraMensaje : AppCompatActivity() {
             for (i in 0 until unirX.size){
                 //Se asignan los elementos del conjunto X al conjunto Y usando las instrucciones de
                     //Unir:[{ }]
-                ejey.add(elementosY.get(unirY.get(i)))
                 ejex.add(elementosX.get(unirX.get(i)))
+                Log.i("error","EL TAMAÑO DE UNIR ES:"+unirX.size)
             }
+            for (i in unirX.size-1 downTo 0){
+                //Se asignan los elementos del conjunto X al conjunto Y usando las instrucciones de
+                //Unir:[{ }]
+                ejey.add(elementosY.get(unirY.get(i)))
+            }
+            Log.e("error","EL TAMAÑO DE EJEX ES: "+ejex.size)
             var entradas = ArrayList<BarEntry>()
             var leyendas = ArrayList<LegendEntry>()
             for (i in 0 until ejex.size){
                 /*Aqui se usan las listas nuevas para añadir entradas a la grafica
                 tambien se usan las "Leyendas" para mostrar las etiquetas
                 * */
-                entradas.add(BarEntry(i.toFloat(),elementosY.get(i).toFloat(),elementosX.get(i)))
+                entradas.add(BarEntry(i.toFloat(),ejey.get(i).toFloat()))
                 val temp = LegendEntry()
                 temp.formColor = ColorTemplate.MATERIAL_COLORS[i]
-                temp.label = elementosX.get(i);
+                temp.label = ejex.get(i);
                 leyendas.add(temp)
             }
 
@@ -86,21 +92,25 @@ class ActividadMuestraMensaje : AppCompatActivity() {
             legend.form = Legend.LegendForm.CIRCLE
             legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
             legend.setCustom(leyendas)
+            legend.textSize = 16.toFloat()
 
         //Se crea un bar data set para el grafico
             val barDataSet = BarDataSet(entradas,"")
             barDataSet.setColors(ColorTemplate.MATERIAL_COLORS,200)
             barDataSet.setValueTextColor(Color.BLACK)
+            barDataSet.valueTextSize = 16.toFloat()
 
             val barData = BarData(barDataSet)
             barChart.setFitBars(true)
             barChart.setData(barData)
             //Aqui deberia ir el titulo pero ya que
             barChart.getDescription().setText("Barras")
-            barChart.animateY(2000)
+            barChart.animateY(1500)
+
 
             //Se ajusta el tamaño de la cuadricula en el eje x para que no muestre
             //numeros decimales
+
             barChart.xAxis.granularity = 1.toFloat()
 
         }
