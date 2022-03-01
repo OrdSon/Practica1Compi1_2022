@@ -10,9 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MiPrimeraApp">
         <activity
-            android:name=".ActividadMuestraMensaje"
-            android:parentActivityName=".MainActivity"
+            android:name=".Reportes"
             android:exported="false" />
+        <activity
+            android:name=".ActividadMuestraMensaje"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

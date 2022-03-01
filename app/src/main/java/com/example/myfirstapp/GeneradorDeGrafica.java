@@ -4,6 +4,7 @@
  */
 package com.example.myfirstapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java_cup.runtime.Symbol;
 
@@ -11,8 +12,8 @@ import java_cup.runtime.Symbol;
  *
  * @author ordson
  */
-public class GeneradorDeGrafica {
-
+public class GeneradorDeGrafica implements Serializable {
+    boolean ejecutar = false;
     boolean barras = false;
     boolean pie = false;
     boolean cantidad = false;
@@ -28,6 +29,9 @@ public class GeneradorDeGrafica {
     ArrayList<String> etiquetas = new ArrayList<>();
     ArrayList<Double> valores = new ArrayList<>();
     ArrayList<String> warnings = new ArrayList<>();
+    ArrayList<String> Repetidas = new ArrayList<>();
+    ArrayList<GraficaBarras> barrasEjecucion = new ArrayList<>();
+    ArrayList<GraficaPie> pieEjecucion = new ArrayList<>();
     private ArrayList<GraficaBarras> graficasDeBarras = new ArrayList<>();
     private ArrayList<GraficaPie> graficasDePie = new ArrayList<>();
 
@@ -48,7 +52,7 @@ public class GeneradorDeGrafica {
     }
 
     void setTitulo(String title) {
-        if (this.titulo == null ||  this.titulo.isEmpty()) {
+        if (this.titulo == null || this.titulo.isEmpty()) {
             this.titulo = title;
         } else {
             System.out.println("error, titulo repetido");
@@ -120,7 +124,7 @@ public class GeneradorDeGrafica {
     }
 
     void setExtraName(String e) {
-        if (this.extraName == null ||  this.extraName.isEmpty()) {
+        if (this.extraName == null || this.extraName.isEmpty()) {
             this.extraName = e;
         } else {
             System.out.println("error, ua se habia definido el nombre del residuo");
@@ -200,7 +204,10 @@ public class GeneradorDeGrafica {
             return null;
         }
         System.out.println(graficaBarras.toString());
-        return graficaBarras;
+        if (buscarRepeticion(graficaBarras.getTitulo()) && errores.isEmpty()) {
+            return graficaBarras;
+        }
+        return null;
     }
 
     private GraficaPie isPieValido() {
@@ -208,7 +215,7 @@ public class GeneradorDeGrafica {
         if (pie && !barras) {
             graficaPie.setExtraName(extraName);
 
-            if (titulo != null || !titulo.isEmpty()) {
+            if (titulo != null  || !titulo.isEmpty()) {
                 graficaPie.setTitulo(titulo);
             } else {
                 System.out.println("Error, no se encontro un titulo");
@@ -218,6 +225,7 @@ public class GeneradorDeGrafica {
             }
             if (elementosX.isEmpty() && elementosY.isEmpty()) {
                 if (porcentaje && total == 0) {
+                    graficaPie.setTotal(100);
                     if (!unionX.isEmpty() && !unionY.isEmpty()) {
                         graficaPie.setUnionX((ArrayList<Integer>) unionX.clone());
                         graficaPie.setUnionY((ArrayList<Integer>) unionY.clone());
@@ -286,7 +294,27 @@ public class GeneradorDeGrafica {
             return null;
         }
 
-        return graficaPie;
+        if (buscarRepeticion(graficaPie.getTitulo()) && errores.isEmpty()) {
+            return graficaPie;
+        }
+        return null;
+    }
+
+    private boolean buscarRepeticion(String titulo) {
+        for (GraficaBarras temp : graficasDeBarras) {
+            if (temp.getTitulo().equals(titulo)) {
+                Repetidas.add(titulo);
+                return false;
+            }
+        }
+        for (GraficaPie temp : graficasDePie) {
+            if (temp.getTitulo().equals(titulo)) {
+                Repetidas.add(titulo);
+                return false;
+            }
+        }
+        return true;
+
     }
 
     private void reset() {
@@ -301,7 +329,6 @@ public class GeneradorDeGrafica {
         extraName = null;
         titulo = new String();
         total = 0;
-        errores.clear();
         elementosX.clear();
         elementosY.clear();
         unionX.clear();
@@ -311,7 +338,12 @@ public class GeneradorDeGrafica {
         warnings.clear();
     }
 
-
+    public void setGraficasDeBarras(ArrayList<GraficaBarras> barras){
+        this.graficasDeBarras = barras;
+    }
+    public void setGraficasDePie(ArrayList<GraficaPie> pies){
+        this.graficasDePie = pies;
+    }
     /*
     def Barras{
                 titulo: "Grafica1";
@@ -338,6 +370,11 @@ unir:[{0,1}, {1,0}];
 extra: "Resto";
 }
 
+Ejecutar("Grafica1");
+Ejecutar("Grafica2");
+Ejecutar("Grafica3");
+
+
      */
     public ArrayList<GraficaBarras> getGraficasDeBarras() {
         return graficasDeBarras;
@@ -349,6 +386,39 @@ extra: "Resto";
 
     public void addMistake(Mistake mistake) {
         this.errores.add(mistake);
+        System.out.println(mistake.toString());
     }
+
+    void addEjecucion(String nombre) {
+        for (GraficaBarras temp : graficasDeBarras) {
+            if (temp.getTitulo().equals(nombre)) {
+                barrasEjecucion.add(temp);
+                ejecutar = true;
+            }
+        }
+        for (GraficaPie temp:graficasDePie) {
+            if (temp.getTitulo().equals(nombre)) {
+                pieEjecucion.add(temp);
+                ejecutar = true;
+            }
+        }
+        
+        if (!errores.isEmpty()) {
+            ejecutar = false;
+            barrasEjecucion.clear();
+            pieEjecucion.clear();
+        }
+        
+    }
+
+    public ArrayList<GraficaBarras> getBarrasEjecucion() {
+        return barrasEjecucion;
+    }
+
+    public ArrayList<GraficaPie> getPieEjecucion() {
+        return pieEjecucion;
+    }
+
+
 
 }

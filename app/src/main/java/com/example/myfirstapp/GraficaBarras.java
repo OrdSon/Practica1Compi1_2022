@@ -4,6 +4,7 @@
  */
 package com.example.myfirstapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java_cup.runtime.Symbol;
 
@@ -11,7 +12,7 @@ import java_cup.runtime.Symbol;
  *
  * @author ordson
  */
-public class GraficaBarras {
+public class GraficaBarras implements Serializable {
 
     @Override
     public String toString() {

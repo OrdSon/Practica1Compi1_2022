@@ -4,13 +4,14 @@
  */
 package com.example.myfirstapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author ordson
  */
-public class GraficaPie {
+public class GraficaPie implements Serializable {
 
     @Override
     public String toString() {

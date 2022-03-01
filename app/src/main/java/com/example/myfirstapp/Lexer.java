@@ -9,7 +9,15 @@ import java_cup.runtime.Symbol;
 // See https://github.com/jflex-de/jflex/issues/222
 @SuppressWarnings("FallThrough")
 class Lexer implements java_cup.runtime.Scanner {
+    GeneradorDeGrafica generador;
 
+    public GeneradorDeGrafica getGenerador() {
+        return generador;
+    }
+
+    public void setGenerador(GeneradorDeGrafica generador) {
+        this.generador = generador;
+    }
   /** This character denotes the end of file. */
   public static final int YYEOF = -1;
 
@@ -705,7 +713,9 @@ class Lexer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { System.out.println("Error "+lexema);
+            {   this.lexema = yytext();
+                System.out.println("Error "+lexema);
+                generador.addMistake(new Mistake(lexema, yyline+"", yycolumn+"", "Lexico"));   
             }
             // fall through
           case 34: break;

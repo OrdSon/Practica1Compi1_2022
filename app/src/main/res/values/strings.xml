@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Mi primera app</string>
-    <string name="mensaje_edicion">Introduzca un mensaje</string>
-    <string name="boton_enviar">Enviar</string>
+    <string name="mensaje_edicion">Introduzca una cadena</string>
+    <string name="boton_analizar">Analizar</string>
     <string name="ola">mira esto perro</string>
+    <string name="graficas_analizadas">Graficas analizadas:</string>
+    <string name="lexema">Lexema</string>
+    <string name="linea">Linea</string>
+    <string name="columna">Columna</string>
+    <string name="descripcion">Descripcion</string>
+    <string name="tipo">Tipo</string>
 </resources>

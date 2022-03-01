@@ -4,18 +4,35 @@
  */
 package com.example.myfirstapp;
 
+import java.io.Serializable;
+
 /**
  *
  * @author ordson
  */
-public class Mistake {
+public class Mistake implements Serializable {
     private String lexema;
     private String linea;
     private String columna;
     private String tipo;
     private String descripcion;
-    private String ERROR_LEXICO= "Simbolo no admitido en el lenguaje";
-    private String ERROR_SINTACTICO="Se esperaba: ";
+    private String ERROR_LEXICO= "Simbolo desconocido";
+    private String ERROR_SINTACTICO="Simbolo inesperado ";
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Mistake{");
+        sb.append("lexema=").append(lexema);
+        sb.append(", linea=").append(linea);
+        sb.append(", columna=").append(columna);
+        sb.append(", tipo=").append(tipo);
+        sb.append(", descripcion=").append(descripcion);
+        sb.append(", ERROR_LEXICO=").append(ERROR_LEXICO);
+        sb.append(", ERROR_SINTACTICO=").append(ERROR_SINTACTICO);
+        sb.append('}');
+        return sb.toString();
+    }
     
 
     public Mistake(String lexema, String linea, String columna, String tipo) {
